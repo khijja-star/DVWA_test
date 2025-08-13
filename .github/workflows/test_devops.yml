@@ -107,4 +107,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print
-        run: echo 'helo word'      
+        run: echo 'hello world'      
+
+  PR1:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR1
+        run: echo "Waktu lokal now : $(currentDate)" 
+
+  PR2:
+    needs: push-to-container-registery
+    runs-on: ubuntu-latest
+    steps:
+    - name: PR2
+      run: whoami   
