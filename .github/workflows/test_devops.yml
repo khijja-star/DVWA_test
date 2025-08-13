@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PR1
-        run: datetime
+        run: date
 
   PR2:
     needs: push-to-container-registery
