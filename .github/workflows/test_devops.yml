@@ -1,9 +1,9 @@
 name: test
 on:
   push:
-    branches: [SIT, main]
+    branches: [SIT, master]
   pull_request:
-    branches: [SIT, main]
+    branches: [SIT, master]
 
 permissions:
   contents: read
