@@ -1,0 +1,103 @@
+name: test
+on:
+  push:
+    branches: [SIT, main]
+  pull_request:
+    branches: [SIT, main]
+
+permissions:
+  contents: read
+  security-events: write  #need for SARIF upload   
+
+jobs:
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/Checkout@v4
+
+  SCA:        
+    needs: build # This job depends on the 'build' job
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        - name: Depcheck
+          uses: dependency-check/Dependency-Check_Action@main
+          id: Depcheck
+          with:
+            project: 'test'
+            path: '.'
+            format: 'HTML'
+            out: 'reports' # this is the default, no need to specify unless you wish to override it
+            args: >
+              --format SARIF
+              --failOnCVSS 7
+              --enableRetired
+        - name: Upload Test results
+          uses: actions/upload-artifact@master
+          with:
+            name: Depcheck report
+            path: ${{github.workspace}}/reports
+
+  SAST:
+    needs: build # This job depends on the 'build' job
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Perform Semgrep Analysis
+        run: semgrep scan -q --sarif --config auto ./ > semgrep-results.sarif
+      # upload the results for the CodeQL GitHub app to annotate the code
+      - name: Save SARIF results as artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: semgrep-scan-results
+          path: semgrep-results.sarif
+
+      # Upload SARIF file generated in previous step
+      - name: Upload SARIF result to the GitHub Security Dashboard
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep-results.sarif
+        if: always()
+
+  Container-Scan:
+    needs: build # This job depends on the 'build' job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run trivy scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      - name: Upload SARIF results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  DAST:
+    needs: build # This job depends on the 'build' job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: setup rule
+        run: echo 'hello rule'
+      - name: run SAST scan
+        run: echo 'hello sast'
+
+  push-to-container-registery:
+    needs: [SCA, SAST, Container-Scan, DAST]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
