@@ -101,3 +101,10 @@ jobs:
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+  Print:
+    needs: push-to-container-registery
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print
+        run: echo 'helo word'      
