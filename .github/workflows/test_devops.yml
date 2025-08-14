@@ -133,7 +133,8 @@ jobs:
        uses: trufflesecurity/trufflehog@master
        with:
           scan: git
-       output: trufflehog-results.sarif
+       format: 'sarif'
+       output: 'trufflehog-results.sarif'
      - name: Upload SARIF results to GitHub
        uses: github/codeql-action/upload-sarif@v3
        with:
