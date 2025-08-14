@@ -130,6 +130,6 @@ jobs:
      - name: Checkout code 
        uses: actions/checkout@v4
      - name: SecretScanning_trufflefog
-       uses: trufflesecurity/trufflehog@master
+       uses: trufflesecurity/trufflehog@main
        
   
