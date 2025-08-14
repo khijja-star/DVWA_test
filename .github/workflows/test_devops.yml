@@ -131,7 +131,8 @@ jobs:
        uses: actions/checkout@v4
      - name: Run Scanning_trufflefog
        uses: trufflesecurity/trufflehog@master
-       scan: git
+       with:
+          scan: git
        output: trufflehog-results.sarif
      - name: Upload SARIF results to GitHub
        uses: github/codeql-action/upload-sarif@v3
