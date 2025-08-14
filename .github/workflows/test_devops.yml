@@ -121,4 +121,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: PR2
-      run: whoami   
+      run: whoami 
+
+  SecretScanning:
+     needs: PR2
+     runs-on: ubuntu-latest
+     steps:
+     - name: Checkout code 
+       uses: actions/checkout@v4
+     - name: SecretScanning_trufflefog
+       uses: trufflesecurity/trufflehog@main
