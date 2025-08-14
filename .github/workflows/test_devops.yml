@@ -131,6 +131,5 @@ jobs:
        uses: actions/checkout@v4
      - name: SecretScanning_trufflefog
        uses: trufflesecurity/trufflehog@master
-       with:
-       scan: git
+       
   
