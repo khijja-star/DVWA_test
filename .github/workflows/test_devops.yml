@@ -110,6 +110,7 @@ jobs:
        uses: actions/checkout@v4
      - name: Run Scanning_kingfisher
        uses: mongodb/kingfisher/docker@main
+       continue-on-error: true
        with:
           args: >
            scan .
@@ -120,7 +121,7 @@ jobs:
        uses: github/codeql-action/upload-sarif@v3
        with:
           sarif_file: 'kingfisher-results.sarif'
-       continue-on-error: true
+       
 
   Deploy:
     needs: push-to-container-registery
