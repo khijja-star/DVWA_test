@@ -129,13 +129,15 @@ jobs:
      steps:
      - name: Checkout code 
        uses: actions/checkout@v4
-     - name: Run Scanning_trufflefog
-       uses: trufflesecurity/trufflehog@main
+     - name: Run Scanning_kingfisher
+       uses: mongodb/kingfisher/docker@main
        with:
-          scan: git
-          format: 'sarif'
-          output: 'trufflehog-result.sarif'
+          args: >
+           scan .
+           --verbose
+           --format sarif
+           --output kingfisher-result.sarif
      - name: Upload SARIF results to GitHub
        uses: github/codeql-action/upload-sarif@v3
        with:
-          sarif_file: 'trufflehog-results.sarif'
+          sarif_file: 'kingfisher-results.sarif'
